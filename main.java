@@ -14,8 +14,9 @@ class URI_connect {
         this.board_name = board_name;  //e.g. "Beauty"
         this.number = number;		   //e.g. Recent "100" articles
         this.vote = vote;              //e.g.  score higher than "vote"
-        this.previous_page_URI="https://www.ptt.cc/bbs/Beauty/";   //when this page doesn't meet the "number" requirment, go to previous page(older posts) and continue downloading
+        this.previous_page_URI="https://www.ptt.cc/bbs/Beauty/index.html";   //when this page doesn't meet the "number" requirment, go to previous page(older posts) and continue downloading
         while(this.downloaded_count<number){    //check if downloaded posts reach given limit
+		System.out.println("目前已完成"+downloaded_count+"個下載");
 		System.out.println("現在開始下載"+previous_page_URI+"頁面的文章");
         get_article_list_and_parse(previous_page_URI);  //get_article_list_and_parse will fetch all article in the URI and invoke article_image_download()
 		}
@@ -42,6 +43,7 @@ class URI_connect {
         Pattern Article_pattern = Pattern.compile("(?s)<div class=\"nrec\">(?:<span class=\".*?\">|)(.*?)(?:</span>|)</div>.*?<div class=\"title\">.*?(?:<a href=\"(.*?)\">(.*?)</a>| ).*?</div>.*?<div class=\"date\"> (.*?)</div>");
         Matcher Article_pattern_matcher = Article_pattern.matcher(content_temp);
         LinkedList<String[]> list=new LinkedList<String[]>();
+		//System.out.println(content_temp);
         while (Article_pattern_matcher.find()) {
 			list.addFirst(new String[]{Article_pattern_matcher.group(1).replace("爆","100").replace("X","0"),Article_pattern_matcher.group(2),Article_pattern_matcher.group(3),Article_pattern_matcher.group(4).replace("/","-")});
 			//System.out.println(Arrays.toString(info_temp));
@@ -74,6 +76,8 @@ class URI_connect {
         URL url = new URL(URI);
         URLConnection conn = url.openConnection();
         conn.addRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
+		String myCookie = "over18=1";
+		conn.setRequestProperty("Cookie", myCookie); 
         conn.connect();
         String type = conn.getContentType();
         //System.out.println("Context: " + type);
